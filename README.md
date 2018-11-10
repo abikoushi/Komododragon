@@ -46,7 +46,7 @@ print(est1$opt$convergence) #0ならば収束
 
 print(round(est1$opt$par,2)) #パラメータの推定値
 
--2*est1$opt$value+2*length(est1$opt$par) #AIC
+print(-2*est1$opt$value+2*length(est1$opt$par)) #AIC
 
 CIcalc(est1$opt) #パラメータの信頼区間
 
