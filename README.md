@@ -34,71 +34,17 @@ simfunc2 <- function(m,beta,alpha,X,tau){
 
 mean(1-dat$d) #打切りデータの割合
 mean(1-dat$z[dat$d==0]) #残存率
-#dropout_weibull <-stan_model("~/dropbox/コモドドラゴン/dropout_weibull.stan")
-#dat4stan <- list(n=nrow(dat),q=ncol(X)+1,y=dat$y,d=dat$d,X=cbind(1,X))
-#smp1 <-sampling(dropout_weibull,dat4stan,iter=1)
-#traceplot(smp1,"alpha")
+
 ###最尤法でパラメータを推定
-library("numDeriv")
 
-est1 <-estdropWeibull(formula1=y~x1+x2+x3,formula2=~x1+x2+x3,event=d,data = dat,method = "BFGS")
-est2 <-estdropWeibull2(formula1=y~x1+x2+x3,formula2=~x1+x2+x3,event=d,data = dat)
+est1 <-estdropWeibull(formula1=y~x1+x2+x3,formula2=~x1+x2+x3,event=d,data = dat)
 
-est1$opt$par
-est2$opt$par
-est1$opt$value
-est2$opt$value
-formula1=y~x1+x2
-formula2=~x1+x2
-d=dat$d
-data=dat
-data_f <-model.frame(formula1,data)
-y <- model.response(data_f)
-X1 <- model.matrix(formula1,data)
-X2 <- model.matrix(formula2,data)
-q1 <- ncol(X1)
-q2 <- ncol(X2)
-lldropWeibull <- function(par){
-  m <-par[1]
-  beta <-par[1:q1+1]
-  alpha <- par[1:q2+q1+1]
-  eta <- drop(exp(X1 %*% beta))
-  logp <- drop(plogis(X2 %*% alpha,log=TRUE))
-  log1mp <- drop(plogis(X2 %*% alpha,log=TRUE,lower.tail = FALSE))
-  sum(d*(dweibull(y,shape=m,scale=eta,log = TRUE)+logp)+
-        (1-d)*log(exp(log1mp)+exp(logp+pweibull(y,shape=m,scale=eta,lower.tail = FALSE,log.p = TRUE))))
-}
-grlldropWeibull <- function(par){
-  m <-par[1]
-  beta <-par[1:q1+1]
-  alpha <- par[1:q2+q1+1]
-  eta <- drop(exp(X1 %*% beta))
-  logp <- drop(plogis(X2 %*% alpha,log=TRUE))
-  log1mp <- drop(plogis(X2 %*% alpha,log=TRUE,lower.tail = FALSE))
-  p <- drop(plogis(X2 %*% alpha))
-  dm <- sum(
-    d*(1/m+log(y)-drop(X1%*%beta)+ ((y/eta)^m)*(-(log(y)-drop(X1 %*% beta))))-
-      (1-d)*(p*exp(-(y/eta)^m))*((y/eta)^m)*(log(y)-drop(X1%*%beta))/
-      (p*exp(-(y/eta)^m)-p+1)
-  )
-  dbeta_mat <- d*(m*X1*((y/eta)^m-1))+
-    (1-d)*(m*p*X1*y*exp(-(y/eta)^m-drop(X1%*%beta))*((y/eta)^(m-1)))/
-    (p*exp(-(y/eta)^m)-p+1)
-  B <- pweibull(y,shape=m,scale=eta,lower.tail = FALSE)
-  dalpha_mat <- d*X2/(1+exp(drop(X2%*%alpha)))+
-    (1-d)*(X2/(exp(drop(X2%*%alpha))+1)-X2/(B*exp(drop(X2%*%alpha))+1))
-  c(dm,apply(dbeta_mat,2,sum),apply(dalpha_mat,2,sum))
-}
-grad(lldropWeibull,rep(1,7))
-grlldropWeibull(rep(1,7))
-curve(1/(1+exp(2*x)),-2,2)
-curve(plogis(2*x,lower.tail = FALSE),add = TRUE,col="red")
 #formula1:来店間隔の式. (列名+列名+...+列名)の形で説明変数を選ぶ
 #formula2:残存率の式
 
-est1$opt$convergence #0ならば収束
+print(est1$opt$convergence) #0ならば収束
 
-round(est1$opt$par,2) #パラメータの推定値
+print(round(est1$opt$par,2)) #パラメータの推定値
 
 -2*est1$opt$value+2*length(est1$opt$par) #AIC
 
@@ -118,5 +64,5 @@ conf_mat[2,2]<-sum(cl[dat$d==0]==0 & (dat$z[dat$d==0]==0))/sum(dat$z[dat$d==0]==
 colnames(conf_mat)<-c("残存（正解）","離脱（正解）")
 rownames(conf_mat)<-c("残存（予測）","離脱（予測）")
 
-round(conf_mat,2)
+print(round(conf_mat,2))
 ~~~
