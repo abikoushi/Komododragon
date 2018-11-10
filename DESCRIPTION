@@ -1,0 +1,10 @@
+Package: Komododragon
+Type: Package
+Title: Analysis of visit intervals by Weibull regression considering latent dropout
+Version: 0.1.0
+Author: Ko ABE
+Maintainer: Ko ABE <ko.abe@med.nagoya-u.ac.jp>
+Description: Analysis of visit intervals by Weibull regression considering latent dropout
+License: GPL
+Encoding: UTF-8
+LazyData: true
