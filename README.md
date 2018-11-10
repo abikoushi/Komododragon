@@ -10,6 +10,7 @@ devtools::install_github("abikoushi/Komododragon")
 
 ## Simulation
 ~~~R
+library(Komododragon)
 ###シミュレーションでデータを生成
 simfunc2 <- function(m,beta,alpha,X,tau){
   n <- nrow(X)
@@ -22,9 +23,9 @@ simfunc2 <- function(m,beta,alpha,X,tau){
   data.frame(y,X,d,z)
 }
 
-# n<-1000
-# set.seed(1);X<-cbind(x1=runif(n,-1,1),x2=rbinom(n,1,0.5),x3=runif(n,-1,1))
-# dat <-simfunc2(m=2,beta=c(1, 1,-1,0.5),alpha=c(2,1,-1,0.5),X=X,tau=3)
+n<-1000
+set.seed(1);X<-cbind(x1=runif(n,-1,1),x2=rbinom(n,1,0.5),x3=runif(n,-1,1))
+dat <-simfunc2(m=2,beta=c(1, 1,-1,0.5),alpha=c(2,1,-1,0.5),X=X,tau=3)
 
 #y:来店間隔
 #x1:説明変数
